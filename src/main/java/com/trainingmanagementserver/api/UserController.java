@@ -23,15 +23,14 @@ import java.util.*;
 import java.util.stream.Collectors;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
 @Slf4j
+@CrossOrigin("http://localhost:8080")
 public class UserController {
     private final UserCredentialsService userCredentialsService;
-
     @PostMapping("/user")
     public ResponseEntity<UserCredentialsEntity> saveUser(@RequestBody UserCredentialsEntity userCredentialsEntity) {
         URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/user").toUriString());
