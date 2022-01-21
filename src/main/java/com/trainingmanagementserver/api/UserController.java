@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.trainingmanagementserver.entity.*;
 import com.trainingmanagementserver.exception.ApiRequestException;
@@ -16,7 +17,9 @@ import com.trainingmanagementserver.service.FileDBService;
 import com.trainingmanagementserver.service.UserCredentialsService;
 import com.trainingmanagementserver.service.UserDetailService;
 import com.trainingmanagementserver.utility.Utility;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -40,7 +43,7 @@ import static org.springframework.http.HttpStatus.FORBIDDEN;
 @RequiredArgsConstructor
 @Slf4j
 //@Validated
-@CrossOrigin("http://localhost:8080")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class UserController {
     private final UserCredentialsService userCredentialsService;
     private final UserDetailService userDetailService;
@@ -213,20 +216,26 @@ public class UserController {
     }
 
     @PostMapping("/assignment/upload")
-    public ResponseEntity<ResponseMessage> uploadFile(@RequestParam(value = "file", required = false) MultipartFile file,@RequestParam("title") String title, @RequestParam("description") String description, @RequestParam("total_credit") int total_credit, @RequestParam("due_date") String due_date, HttpServletRequest request) {
+    public ResponseEntity<?> uploadFile(@RequestParam(value = "file", required = false) MultipartFile file,@RequestParam("title") String title, @RequestParam("description") String description, @RequestParam("total_credit") int total_credit, @RequestParam("due_date") String due_date, HttpServletRequest request) {
         String senderUsername = (new Utility()).getUsernameFromToken(request);
         int trainerId = userCredentialsRepository.findByUsername(senderUsername).getId();
         var savedAssignment = assignmentDetailsService.save(new AssignmentDetail(trainerId, title, description, total_credit, due_date, true));
-        String message = "Assignment Uploaded Successfully";
         if(file != null) {
             try {
-                fileDBService.store(file, savedAssignment.getId());
+                var savedFile = fileDBService.store(file, savedAssignment.getId());
+                String fileDownloadUri = ServletUriComponentsBuilder
+                        .fromCurrentContextPath()
+                        .path("/files/")
+                        .path(Integer.toString(savedFile.getId()))
+                        .toUriString();
+                ResponseFile responseFile = new ResponseFile(savedFile.getName(),fileDownloadUri, savedFile.getType(), savedFile.getData().length);
+                return ResponseEntity.ok(new AssignmentFileMerged(savedAssignment, responseFile));
             } catch(IOException exception) {
-                message = "Could not upload the file " + file.getOriginalFilename();
+                String message = "File cannot be uploaded";
                 return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
             }
         }
-        return ResponseEntity.ok(new ResponseMessage(message));
+        return ResponseEntity.ok(new AssignmentFileMerged(savedAssignment, new ResponseFile()));
     }
 
     @GetMapping("/files/{id}")
@@ -248,4 +257,14 @@ public class UserController {
 class RoleToUserForm {
     private String username;
     private String roleName;
+}
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+class AssignmentFileMerged {
+    @JsonUnwrapped
+    private AssignmentDetail assignmentDetail;
+    @JsonUnwrapped
+    private ResponseFile responseFile;
 }
