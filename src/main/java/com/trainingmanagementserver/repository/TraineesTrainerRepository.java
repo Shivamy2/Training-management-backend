@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface TraineesTrainerRepository extends JpaRepository<TraineesTrainer, Integer> {
     List<TraineesTrainer> findByTrainerId(int id);
+    TraineesTrainer findByTraineeId(int id);
 }

@@ -1,5 +1,6 @@
 package com.trainingmanagementserver.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -23,6 +24,7 @@ public class AssignmentDetail {
 
     private String dueDate;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private boolean isAvailable;
 
     public AssignmentDetail(int trainerId, String title, String description, int totalCredit, String dueDate, boolean isAvailable) {

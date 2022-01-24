@@ -4,8 +4,11 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.trainingmanagementserver.entity.FileDB;
 import com.trainingmanagementserver.exception.ApiRequestException;
+import com.trainingmanagementserver.message.ResponseFile;
 import lombok.Data;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -24,6 +27,16 @@ public class Utility implements UtilitySkeleton{
                 return decodedJWT.getSubject();
             }
         throw new ApiRequestException("Token invalid");
+    }
+
+    @Override
+    public ResponseFile getResponseFile(FileDB file) {
+        String fileDownloadUri = ServletUriComponentsBuilder
+                .fromCurrentContextPath()
+                .path("/files/")
+                .path(Integer.toString(file.getId()))
+                .toUriString();
+        return (new ResponseFile(file.getName(),fileDownloadUri, file.getType(), file.getData().length));
     }
 }
 

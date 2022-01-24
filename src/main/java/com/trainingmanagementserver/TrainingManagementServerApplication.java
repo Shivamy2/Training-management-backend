@@ -14,6 +14,7 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -24,6 +25,11 @@ public class TrainingManagementServerApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(TrainingManagementServerApplication.class, args);
+	}
+
+	@GetMapping("/")
+	public String check() {
+		return "Hello. I am running!";
 	}
 
 	@Bean
