@@ -18,10 +18,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
-import java.net.http.HttpRequest;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
