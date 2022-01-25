@@ -50,6 +50,7 @@ public class TrainingManagementServerApplication {
 //	@Bean
 //	public CommandLineRunner run(UserCredentialsService userCredentialsService, UserDetailService userDetailService, TraineesTrainerRepository traineesTrainerRepository) {
 //		return args -> {
+//			userCredentialsService.deleteUser(1);
 //			userCredentialsService.roleSave(new Role("ROLE_TRAINER"));
 //			userCredentialsService.roleSave(new Role("ROLE_TRAINEE"));
 //			userCredentialsService.userCredentialsSave(new UserCredentialsEntity
