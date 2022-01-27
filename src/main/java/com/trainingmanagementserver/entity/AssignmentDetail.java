@@ -20,7 +20,6 @@ public class AssignmentDetail {
     private String description;
     private int totalCredit;
 
-    private int scoredCredit;
 
     private String dueDate;
 

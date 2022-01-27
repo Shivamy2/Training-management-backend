@@ -17,8 +17,8 @@ public class AssignmentSubmitDetails {
     private int assignmentId;
     private int traineeId;
     private String link;
-
     private String description;
+    private int scoredCredit;
 
     public AssignmentSubmitDetails(int assignmentId, int traineeId, String link, String description) {
         this.assignmentId = assignmentId;

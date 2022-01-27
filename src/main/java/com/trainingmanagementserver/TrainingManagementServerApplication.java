@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.util.ArrayList;
+
 @SpringBootApplication(exclude = SecurityAutoConfiguration.class)
 @RestController
 public class TrainingManagementServerApplication {
@@ -54,7 +56,7 @@ public class TrainingManagementServerApplication {
 //			userCredentialsService.roleSave(new Role("ROLE_TRAINER"));
 //			userCredentialsService.roleSave(new Role("ROLE_TRAINEE"));
 //			userCredentialsService.userCredentialsSave(new UserCredentialsEntity
-//					("testuser1","secret", "testuser1@gmail.com", new ArrayList<>())
+//					("anonymous","secret", "anonymous@gmail.com", new ArrayList<>())
 //			);
 //			userCredentialsService.userCredentialsSave(new UserCredentialsEntity
 //					("testuser2","secret", "testuser2@gmail.com", new ArrayList<>())
@@ -78,7 +80,7 @@ public class TrainingManagementServerApplication {
 //					("testuser8","secret", "testuser8@gmail.com", new ArrayList<>())
 //			);
 //
-//			userCredentialsService.addRoleToUser("ROLE_TRAINER", "testuser1");
+//			userCredentialsService.addRoleToUser("ROLE_TRAINER", "anonymous");
 //			userCredentialsService.addRoleToUser("ROLE_TRAINEE", "testuser8");
 //			userCredentialsService.addRoleToUser("ROLE_TRAINEE", "testuser2");
 //			userCredentialsService.addRoleToUser("ROLE_TRAINEE", "testuser3");

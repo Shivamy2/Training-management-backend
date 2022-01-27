@@ -23,17 +23,17 @@ public class UserCredentialsEntity {
     @Column(name = "id")
     private int id;
 
-    @NotEmpty(message = "Username is mandatory")
-    @Size(min = 5, max = 15, message = "Username must be of 5 to 15 characters")
+//    @NotEmpty(message = "Username is mandatory")
+//    @Size(min = 5, max = 15, message = "Username must be of 5 to 15 characters")
     private String username;
 
-    @NotEmpty(message = "Password is mandatory")
-    @Size(min = 5, max = 50, message = "Password must be b/w 5 to 50 characters")
+//    @NotEmpty(message = "Password is mandatory")
+//    @Size(min = 5, max = 50, message = "Password must be b/w 5 to 50 characters")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
-    @NotEmpty(message = "Email is mandatory")
-    @Email
+//    @NotEmpty(message = "Email is mandatory")
+//    @Email
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 

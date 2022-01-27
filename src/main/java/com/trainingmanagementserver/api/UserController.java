@@ -47,13 +47,8 @@ public class UserController {
         var email = userCredentialsRepository.findByEmail(userCredentialsEntity.getEmail());
         if(username == null  && email == null) {
             return ResponseEntity.created(uri).body(userCredentialsService.userCredentialsSave(userCredentialsEntity));
-        } else if(username != null && email != null) {
-            throw new ApiRequestException("Username and Email already exist");
         }
-        else if(username != null){
-            throw new ApiRequestException("Username already exist");
-        }
-        throw new ApiRequestException("Email already exist");
+        throw new ApiRequestException("Invalid Details");
     }
 
     @PostMapping("/role")
