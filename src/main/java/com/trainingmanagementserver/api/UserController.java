@@ -196,6 +196,7 @@ public class UserController {
         userCredentialsService.deleteUser(userId);
         return ResponseEntity.ok("User is deleted Successfully!!");
     }
+
 }
 
 @Data

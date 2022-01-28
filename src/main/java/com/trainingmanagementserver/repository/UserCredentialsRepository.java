@@ -5,5 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserCredentialsRepository extends JpaRepository<UserCredentialsEntity, Integer> {
     UserCredentialsEntity findByEmail(String email);
+
     UserCredentialsEntity findByUsername(String username);
 }
