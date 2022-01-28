@@ -10,8 +10,6 @@ import javax.persistence.Table;
 import javax.validation.constraints.*;
 import java.util.Objects;
 
-
-@Slf4j
 @Table(name = "userDetails")
 @Entity
 @Getter
@@ -19,7 +17,7 @@ import java.util.Objects;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserDetailsEntity{
+public class UserDetailsEntity {
     @Id
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private int id;
@@ -31,6 +29,8 @@ public class UserDetailsEntity{
     @Size(min = 3, max = 15, message = "last name must be of 3 to 30 letters long")
     @NotEmpty(message = "last name cannot be null")
     private String last_name;
+
+    private String profile_pic_url;
 
     @Pattern(regexp = "^([0-2][0-9]|[3][0-1])$")
     @Size(min = 2, max = 2, message = "birth date must be of 2 digits")
@@ -73,14 +73,22 @@ public class UserDetailsEntity{
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         UserDetailsEntity that = (UserDetailsEntity) o;
-        return id == that.id && pin_code == that.pin_code && Objects.equals(first_name, that.first_name) && Objects.equals(last_name, that.last_name) && Objects.equals(birth_date, that.birth_date) && Objects.equals(birth_month, that.birth_month) && Objects.equals(birth_year, that.birth_year) && Objects.equals(area, that.area) && Objects.equals(city, that.city) && Objects.equals(district, that.district) && Objects.equals(mobile_number, that.mobile_number) && Objects.equals(gender, that.gender);
+        return id == that.id && pin_code == that.pin_code && Objects.equals(first_name, that.first_name)
+                && Objects.equals(last_name, that.last_name) && Objects.equals(birth_date, that.birth_date)
+                && Objects.equals(birth_month, that.birth_month) && Objects.equals(birth_year, that.birth_year)
+                && Objects.equals(area, that.area) && Objects.equals(city, that.city)
+                && Objects.equals(district, that.district) && Objects.equals(mobile_number, that.mobile_number)
+                && Objects.equals(gender, that.gender);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, first_name, last_name, birth_date, birth_month, birth_year, area, city, district, pin_code, mobile_number, gender);
+        return Objects.hash(id, first_name, last_name, birth_date, birth_month, birth_year, area, city, district,
+                pin_code, mobile_number, gender);
     }
 }

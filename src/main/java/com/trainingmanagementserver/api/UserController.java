@@ -8,6 +8,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.trainingmanagementserver.entity.*;
 import com.trainingmanagementserver.exception.ApiRequestException;
 import com.trainingmanagementserver.repository.UserCredentialsRepository;
+import com.trainingmanagementserver.repository.UserDetailRepository;
+import com.trainingmanagementserver.service.FileDBService;
 import com.trainingmanagementserver.service.UserCredentialsService;
 import com.trainingmanagementserver.service.UserDetailService;
 import com.trainingmanagementserver.utility.Utility;
@@ -18,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -33,19 +36,23 @@ import static org.springframework.http.HttpStatus.FORBIDDEN;
 @RequestMapping("/api")
 @RequiredArgsConstructor
 @Slf4j
-//@Validated
+// @Validated
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 public class UserController {
     private final UserCredentialsService userCredentialsService;
     private final UserDetailService userDetailService;
     private final UserCredentialsRepository userCredentialsRepository;
+    private final UserDetailRepository userDetailRepository;
+    private final FileDBService fileDBService;
 
     @PostMapping("/auth/signup")
-    public ResponseEntity<UserCredentialsEntity> saveUser(@RequestBody UserCredentialsEntity userCredentialsEntity) throws ApiRequestException{
-        URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/auth/signup").toUriString());
+    public ResponseEntity<UserCredentialsEntity> saveUser(@RequestBody UserCredentialsEntity userCredentialsEntity)
+            throws ApiRequestException {
+        URI uri = URI
+                .create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/auth/signup").toUriString());
         var username = userCredentialsRepository.findByUsername(userCredentialsEntity.getUsername());
         var email = userCredentialsRepository.findByEmail(userCredentialsEntity.getEmail());
-        if(username == null  && email == null) {
+        if (username == null && email == null) {
             return ResponseEntity.created(uri).body(userCredentialsService.userCredentialsSave(userCredentialsEntity));
         }
         throw new ApiRequestException("Invalid Details");
@@ -58,7 +65,7 @@ public class UserController {
     }
 
     @GetMapping("/register/check")
-    public ResponseEntity<?> checkRegister(HttpServletRequest request) throws ApiRequestException{
+    public ResponseEntity<?> checkRegister(HttpServletRequest request) throws ApiRequestException {
         try {
             String username = (new Utility()).getUsernameFromToken(request);
             int userId = userCredentialsRepository.findByUsername(username).getId();
@@ -84,15 +91,37 @@ public class UserController {
         }
     }
 
+    @PostMapping("/file/dp")
+    public ResponseEntity<?> uploadDP(@RequestParam("dp") MultipartFile file, HttpServletRequest request)
+            throws IOException {
+        if (file != null) {
+            String username = new Utility().getUsernameFromToken(request);
+            int user_id = userCredentialsRepository.findByUsername(username).getId();
+            var userDetails = userDetailRepository.findById(user_id);
+            if (userDetails.isPresent()) {
+                var fileData = fileDBService.store(file, user_id);
+                var fileResponse = new Utility().getResponseFile(fileData);
+                userDetails.get().setProfile_pic_url(fileResponse.getUrl());
+                userDetailService.save(userDetails.get());
+                return ResponseEntity.ok().body("Successfully uploaded file");
+            } else {
+                throw new ApiRequestException("Failed to upload file");
+            }
+        }
+        throw new ApiRequestException("No file is found");
+    }
+
     @PostMapping("/me")
-    public ResponseEntity<?> saveUser(@Valid @RequestBody UserDetailsEntity userDetailsEntity, HttpServletRequest request) {
-//        System.out.println("Printing result "+result);
-//        if(result.hasErrors()) {
-//            Map<String, BindingResult> errors = new HashMap<>();
-//            errors.put("error", result);
-//            return ResponseEntity.badRequest().body(errors);
-//        }
-        URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/user/detail").toUriString());
+    public ResponseEntity<?> saveUser(@Valid @RequestBody UserDetailsEntity userDetailsEntity,
+            HttpServletRequest request) {
+        // System.out.println("Printing result "+result);
+        // if(result.hasErrors()) {
+        // Map<String, BindingResult> errors = new HashMap<>();
+        // errors.put("error", result);
+        // return ResponseEntity.badRequest().body(errors);
+        // }
+        URI uri = URI
+                .create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/user/detail").toUriString());
         String username = (new Utility()).getUsernameFromToken(request);
         int userId = userCredentialsRepository.findByUsername(username).getId();
         userDetailsEntity.setId(userId);
@@ -135,7 +164,9 @@ public class UserController {
                         .withSubject(userCredentialsEntity.getUsername())
                         .withExpiresAt(new Date(System.currentTimeMillis() + 10 * 60 * 1000))
                         .withIssuer(request.getRequestURL().toString())
-                        .withClaim("roles", userCredentialsEntity.getRoles().stream().map(Role::getName).collect(Collectors.toList()))
+                        .withClaim("roles",
+                                userCredentialsEntity.getRoles().stream().map(Role::getName)
+                                        .collect(Collectors.toList()))
                         .sign(algorithm);
                 Map<String, String> tokens = new HashMap<>();
                 tokens.put("access_token", access_token);
